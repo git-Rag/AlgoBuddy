@@ -117,8 +117,8 @@ export default async function RootLayout({ children }) {
             </ClientLayoutWrapper>
           </UserProvider>
         </AuthProvider>
+        <SpeedInsights />
       </body>
-      <SpeedInsights />
     </html>
   );
 }

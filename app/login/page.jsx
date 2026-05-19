@@ -135,7 +135,6 @@ export default function LoginPage() {
               animate={{ opacity: 1 }}
               id="error-message"
               role="alert"
-              aria-describedby="error-message"
               className="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-3 rounded"
             >
               {error}
@@ -196,13 +195,12 @@ export default function LoginPage() {
               <Turnstile
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
                 onSuccess={(token) => setCaptchaToken(token)}
-                disabled={loading}
               />
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !captchaToken}
               className={`w-full flex items-center justify-center py-3 px-4 rounded text-white font-bold transition-all ${
                 loading
                   ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"

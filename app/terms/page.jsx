@@ -115,7 +115,7 @@ export default function TermsPage() {
             ))}
           </div>
           <p className="mt-8 text-xs text-[var(--udemy-muted)] dark:text-[var(--udemy-dark-muted)]">
-            Last updated: May 17, 2025
+            Last updated: May 19, 2026
           </p>
         </div>
       </main>

@@ -3,6 +3,12 @@
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function Error({ error, reset }) {
+  const fallbackMessage = "An unexpected error occurred. Please try again.";
+  const errorMessage =
+    process.env.NODE_ENV === "production"
+      ? fallbackMessage
+      : error?.message || fallbackMessage;
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-white px-4 dark:bg-[var(--udemy-dark-bg)]">
       <div className="flex flex-col items-center gap-4 text-center">
@@ -13,7 +19,7 @@ export default function Error({ error, reset }) {
           Something went wrong!
         </h2>
         <p className="max-w-md text-sm text-[var(--udemy-muted)] dark:text-[var(--udemy-dark-muted)]">
-          {error?.message || "An unexpected error occurred. Please try again."}
+          {errorMessage}
         </p>
         <button
           onClick={reset}
