@@ -5,6 +5,11 @@ We welcome and appreciate contributions from the community to help make this pro
 
 ---
 
+**Join our community**
+**Discord Server : https://discord.gg/Gv2N4U3KAc**
+
+---
+
 ## ↪️ Table of Contents
 
 * [Contribution Areas](#contribution-areas)
