@@ -227,7 +227,7 @@ const LinearSearch = () => {
               <div key={index} className="flex flex-col items-center">
                 <div
                   ref={(el) => (elementRefs.current[index] = el)}
-                  className={`w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 text-lg font-medium ${
+                  className={`w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 ${getFontSize(element)} font-medium ${
                     foundIndex === index
                       ? "bg-green-500 dark:bg-green-600 border-green-700 dark:border-green-400 text-gray-800 dark:text-white"
                       : currentIndex === index && foundIndex === -1

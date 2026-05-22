@@ -310,7 +310,7 @@ const MergeSortVisualizer = () => {
                   return (
                     <div key={index} className="flex flex-col items-center">
                       <div
-                        className={`w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 text-lg font-medium
+                        className={`w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 ${getFontSize(value)} font-medium
                             ${
                               isComparing
                                 ? "bg-red-400 dark:bg-red-400 border-red-600 dark:border-red-600 text-gray-800"

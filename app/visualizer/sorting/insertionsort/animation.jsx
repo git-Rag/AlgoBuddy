@@ -247,7 +247,7 @@ const InsertionSortVisualizer = () => {
                   <div key={index} className="flex flex-col items-center">
                     <div
                       ref={(el) => (barRefs.current[index] = el)}
-                      className={`bar w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 text-lg font-medium
+                      className={`bar w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 ${getFontSize(value)} font-medium
                             ${
                               isCurrent
                                 ? "bg-yellow-400 dark:bg-yellow-400 border-yellow-600 dark:border-yellow-600 dark:text-gray-800"

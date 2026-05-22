@@ -343,7 +343,7 @@ const QuickSortVisualizer = () => {
                 return (
                   <div key={index} className="flex flex-col items-center">
                     <div
-                      className={`array-bar w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 text-lg font-medium
+                      className={`array-bar w-16 h-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 ${getFontSize(value)} font-medium
                             ${
                               isPivot
                                 ? "bg-red-400 dark:bg-red-600 border-red-600 dark:border-red-400"
