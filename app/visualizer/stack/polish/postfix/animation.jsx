@@ -95,7 +95,17 @@ const InfixToPostfixVisualizer = () => {
   const togglePlayPause = () => setIsPlaying(p => !p);
   const jumpToStep = (idx) => { setCurrentStep(idx); if (idx === steps.length - 1) setIsPlaying(false); };
 
-  useEffect(() => { let t; if (isPlaying && currentStep < steps.length - 1) t = setTimeout(playNextStep, speed); else if (currentStep >= steps.length - 1) setIsPlaying(false); return () => clearTimeout(t); }, [isPlaying, currentStep, steps.length, speed]);
+  useEffect(() => {
+    let t;
+    if (isPlaying && currentStep < steps.length - 1) {
+      t = setTimeout(() => {
+        setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
+      }, speed);
+    } else if (currentStep >= steps.length - 1) {
+      setIsPlaying(false);
+    }
+    return () => clearTimeout(t);
+  }, [isPlaying, currentStep, steps.length, speed]);
 
   /* =======  NEW: tiny GSAP flash on step change  ======= */
   const statusRef = useRef();

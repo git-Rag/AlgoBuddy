@@ -55,7 +55,7 @@ function drawTree(
   });
 }
 
-export default function content() {
+export default function Content() {
   /* refs for the three svgs */
   const fullSvg    = useRef(null);
   const degenSvg   = useRef(null);
