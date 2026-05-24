@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { Play, Pause } from "lucide-react";
 import ResetButton from "@/app/components/ui/resetButton";
 import GoButton from "@/app/components/ui/goButton";
 
@@ -19,14 +18,11 @@ const LinearSearch = () => {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [foundIndex, setFoundIndex] = useState(-1);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // FIX: "success" | "error" | "warning"
   const [speed, setSpeed] = useState(1);
   const speedRef = useRef(1);
   const animationRef = useRef(null);
-  const isPausedRef = useRef(false);
-  const searchStateRef = useRef({ index: 0, arr: [], targetValue: 0 });
   const formRef = useRef(null);
   const elementRefs = useRef([]);
 
@@ -44,8 +40,6 @@ const LinearSearch = () => {
     setMessage("");
     setMessageType(""); // FIX: reset message type
     setIsAnimating(false);
-    setIsPaused(false);
-    isPausedRef.current = false;
     setArrayElements("");
     setTarget("");
     if (formRef.current) formRef.current.reset();
@@ -108,101 +102,57 @@ const targetValue = parseInt(target);
 
     setArray(elements);
     setIsAnimating(true);
-    setIsPaused(false);
-    isPausedRef.current = false;
     setCurrentIndex(-1);
     setFoundIndex(-1);
     setMessage("");
     setMessageType("");
 
-    searchStateRef.current = {
-      index: 0,
-      arr: elements,
-      targetValue,
-    };
-
     // start animation
-    animateLinearSearch();
+    animateLinearSearch(elements, targetValue);
   };
 
-  const animateLinearSearch = () => {
-    const { index, arr, targetValue } = searchStateRef.current;
+  const animateLinearSearch = (arr, targetValue) => {
+    let index = 0;
 
-    if (index >= arr.length) {
-      setMessage(`Element ${targetValue} not found in the array.`);
-      setMessageType("error"); // FIX: search result "not found" → red
-      setIsAnimating(false);
-      return;
-    }
-
-    setCurrentIndex(index);
-
-    // highlight current
-    elementRefs.current.forEach((ref, idx) => {
-      if (!ref) return;
-      if (idx === index) {
-        gsap.to(ref, { backgroundColor: "#EAB308", borderColor: "#A16207", duration: 0.3 });
-      } else if (idx < index) {
-        gsap.to(ref, { backgroundColor: "#93C5FD", borderColor: "#3B82F6", duration: 0.3 });
-      } else {
-        gsap.to(ref, { backgroundColor: "#E5E7EB", borderColor: "#D1D5DB", duration: 0.3 });
-      }
-    });
-
-    const delay = 1500 / speedRef.current;
-    animationRef.current = setTimeout(() => {
-      if (arr[index] === targetValue) {
-        setFoundIndex(index);
-        setMessage(`Element ${targetValue} found at index ${index}!`);
-        setMessageType("success"); // FIX: found → green
+    const step = () => {
+      if (index >= arr.length) {
+        setMessage(`Element ${targetValue} not found in the array.`);
+        setMessageType("error"); // FIX: search result "not found" → red
         setIsAnimating(false);
-        gsap.to(elementRefs.current[index], { backgroundColor: "#22C55E", borderColor: "#15803D", duration: 0.3 });
-      } else {
-        searchStateRef.current.index++;
-        
-        if (!isPausedRef.current) {
-          animateLinearSearch();
+        return;
+      }
+
+      setCurrentIndex(index);
+
+      // highlight current
+      elementRefs.current.forEach((ref, idx) => {
+        if (!ref) return;
+        if (idx === index) {
+          gsap.to(ref, { backgroundColor: "#EAB308", borderColor: "#A16207", duration: 0.3 });
+        } else if (idx < index) {
+          gsap.to(ref, { backgroundColor: "#93C5FD", borderColor: "#3B82F6", duration: 0.3 });
+        } else {
+          gsap.to(ref, { backgroundColor: "#E5E7EB", borderColor: "#D1D5DB", duration: 0.3 });
         }
-      }
-    }, delay);
-  };
+      });
 
-  const togglePlayPause = () => {
-    setIsPaused((prev) => {
-      const newPaused = !prev;
-      isPausedRef.current = newPaused;
-      if (!newPaused) {
-        animateLinearSearch();
-      }
-      return newPaused;
-    });
-  };
-
-  const togglePlayPauseRef = useRef(togglePlayPause);
-  useEffect(() => {
-    togglePlayPauseRef.current = togglePlayPause;
-  });
-
-  const isAnimatingRef = useRef(isAnimating);
-  useEffect(() => {
-    isAnimatingRef.current = isAnimating;
-  }, [isAnimating]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (
-        e.code === "Space" &&
-        isAnimatingRef.current &&
-        document.activeElement.tagName !== "INPUT" &&
-        document.activeElement.tagName !== "BUTTON"
-      ) {
-        e.preventDefault();
-        togglePlayPauseRef.current();
-      }
+      const delay = 1500 / speedRef.current;
+      animationRef.current = setTimeout(() => {
+        if (arr[index] === targetValue) {
+          setFoundIndex(index);
+          setMessage(`Element ${targetValue} found at index ${index}!`);
+          setMessageType("success"); // FIX: found → green
+          setIsAnimating(false);
+          gsap.to(elementRefs.current[index], { backgroundColor: "#22C55E", borderColor: "#15803D", duration: 0.3 });
+        } else {
+          index++;
+          step();
+        }
+      }, delay);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+
+    step();
+  };
 
   const increaseSpeed = () => {
     setSpeed((prev) => {
@@ -249,14 +199,14 @@ const targetValue = parseInt(target);
               id="arrayElements"
               value={arrayElements}
               onChange={(e) => setArrayElements(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 dark:focus:ring-primary/30 transition duration-300"
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-[#a435f0] focus:outline-none focus:ring-2 focus:ring-[#a435f0]/30 dark:focus:ring-[#a435f0]/30 transition duration-300"
               placeholder="eg. 3, 1, 4, 1, 5"
               disabled={isAnimating}
             />
             <button
               type="button"
               onClick={generateRandomArray}
-              className="px-4 py-2 font-bold bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-200"
+              className="px-4 py-2 font-bold bg-[#a435f0] text-white rounded-lg hover:bg-[#8f2cd6] transition-all duration-200"
               disabled={isAnimating}
             >
               Random
@@ -275,7 +225,7 @@ const targetValue = parseInt(target);
               id="target"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              className="w-full sm:max-w-xs p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 dark:focus:ring-primary/30 transition duration-300"
+              className="w-full sm:max-w-xs p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-[#a435f0] focus:outline-none focus:ring-2 focus:ring-[#a435f0]/30 dark:focus:ring-[#a435f0]/30 transition duration-300"
               placeholder="eg. 4"
               disabled={isAnimating}
             />
@@ -288,37 +238,24 @@ const targetValue = parseInt(target);
         </div>
 
         {isAnimating && (
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-200 dark:border-gray-700 gap-4">
+          <div className="flex items-center justify-between mb-4">
             <button
               type="button"
-              onClick={togglePlayPause}
-              className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-sm w-full sm:w-auto justify-center"
+              onClick={decreaseSpeed}
+              className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors"
+              disabled={speed <= 0.5}
             >
-              {isPaused ? <Play size={20} /> : <Pause size={20} />}
-              {isPaused ? "Play" : "Pause"}
+              -
             </button>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={decreaseSpeed}
-                className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-lg transition-colors shadow-sm"
-                disabled={speed <= 0.5}
-              >
-                -
-              </button>
-              <span className="text-gray-700 dark:text-gray-300 font-medium min-w-[80px] text-center">
-                Speed: {speed}x
-              </span>
-              <button
-                type="button"
-                onClick={increaseSpeed}
-                className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-lg transition-colors shadow-sm"
-                disabled={speed >= 5}
-              >
-                +
-              </button>
-            </div>
+            <span className="text-gray-700 dark:text-gray-300">Speed: {speed}x</span>
+            <button
+              type="button"
+              onClick={increaseSpeed}
+              className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors"
+              disabled={speed >= 5}
+            >
+              +
+            </button>
           </div>
         )}
       </form>
